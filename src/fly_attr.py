@@ -12,10 +12,6 @@ class FlyPosture(Enum):
 
     charging = 4  # 正在充电
 
-    avoiding = 5  # 正在避障
-
-    over = 6  # 完成全部飞行任务
-
 
 class CFSequence:
 
@@ -48,15 +44,13 @@ class CFSequence:
 
 
 class CFStatus:
-    def __init__(self, uri, current_posture, status_lock, current_position=None, current_battery=100, current_end_point=None):
+    def __init__(self, uri, current_posture, current_position=None, current_battery=100):
         """
-        初始化时瞎赋值，只要求uri,current_posture,status_lock必须提供就行了
+        初始化时瞎赋值，只要求uri必须提供就行了
         :param uri: 无人机地址
-        :param current_posture: FlyPosture所定义的几种姿态
-        :param status_lock: 多线程修改current_posture时所需要的锁
         :param current_position: xyz三元组
         :param current_battery: 100为满电，0为无电
-        :param current_end_point: 当前终点，避障用
+        :param current_posture: FlyPosture所定义的几种姿态
         """
         self._uri = uri
         if current_position == None:
@@ -64,9 +58,7 @@ class CFStatus:
         else:
             self._current_position = current_position
         self._current_battery = current_battery
-        self._status_lock = status_lock
         self._current_posture = current_posture
-        self._current_end_point = current_end_point
 
     def __getattr__(self, item):
         if item == 'uri':
@@ -77,10 +69,6 @@ class CFStatus:
             return self._current_battery
         elif item == 'current_posture':
             return self._current_posture
-        elif item == 'current_end_point':
-            return self._current_end_point
-        elif item == 'status_lock':
-            return self._status_lock
         else:
             raise AttributeError('没有这个属性')
 
@@ -91,10 +79,6 @@ class CFStatus:
             super().__setattr__('_current_position', value)
         elif key == 'current_battery':
             super().__setattr__('_current_battery', value)
-        elif key == 'current_posture':
-            super().__setattr__('_current_posture', value)
-        elif key == 'current_end_point':
-            super().__setattr__('_current_end_point', value)
         elif key == 'current_posture':
             super().__setattr__('_current_posture', value)
         else:
